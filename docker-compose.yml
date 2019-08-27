@@ -5,6 +5,11 @@ services:
     image: dev/redis-server:2.8.17
     ports:
       - "6380:6379"  
+
+  data_insertion:
+    image: dev/redis-mass-insertion:latest
+    links:
+      - redis_node_1:redis_master
   
   redis_node_2:
     image: dev/redis-server:2.8.17
@@ -36,7 +41,7 @@ services:
       - SENTINEL_DOWN_AFTER=5000
       - SENTINEL_FAILOVER=5000
     links:
-      - redis_node_1:redis-master
+      - redis_node_1:redis_master
     ports:
       - "26380:26379"
 
@@ -46,7 +51,7 @@ services:
       - SENTINEL_DOWN_AFTER=5000
       - SENTINEL_FAILOVER=5000
     links:
-      - redis_node_1:redis-master
+      - redis_node_1:redis_master
     ports:
       - "26381:26379"
 
@@ -56,7 +61,7 @@ services:
       - SENTINEL_DOWN_AFTER=5000
       - SENTINEL_FAILOVER=5000
     links:
-      - redis_node_1:redis-master
+      - redis_node_1:redis_master
     ports:
       - "26382:26379"            
 

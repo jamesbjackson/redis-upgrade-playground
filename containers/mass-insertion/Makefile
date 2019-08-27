@@ -1,8 +1,9 @@
 
-REPOSITORY = "electricimp/agent-http"
-VERSION = `git rev-parse --short HEAD`
+# Common / Shared Variables
+REPOSITORY = "dev/redis-mass-insertion"
+VERSION = "latest"
 
-.PHONY: help deps build shell clean export cleanup-containers stop-all-containers cleanup-images remove-untagged-images remove-all-images remove-all-images prune-images run
+.PHONY: help build shell clean export 
 
 # ------------------------------------------------------------------------------
 # Make Targets / Help Information
@@ -32,28 +33,21 @@ help: ## This help dialog.
 # ------------------------------------------------------------------------------
 
 
-build: ## Build all the redis version docker images.
-	cd ${PWD}/containers/redis/2.8.17 && $(MAKE) build
-	cd ${PWD}/containers/redis/3.0.7 && $(MAKE) build
-	cd ${PWD}/containers/redis/3.2.13 && $(MAKE) build
-	cd ${PWD}/containers/redis/4.0.14 && $(MAKE) build
-	cd ${PWD}/containers/redis/5.0.5 && $(MAKE) build
-	cd ${PWD}/containers/mass-insertion && $(MAKE) build
+build: ## Build the docker container with caching enabled.
+	docker build -t $(REPOSITORY):$(VERSION) .
 
+clean: ## Build the docker container with caching disabled.
+	docker build --no-cache -t $(REPOSITORY):$(VERSION) .
+
+shell: clean ## Get interactive shell access to a built container
+	docker run --cap-add=NET_ADMIN --rm -it $(REPOSITORY):$(VERSION) /bin/bash
+
+export: ## Produces a tarred repository to the standard output stream.
+	docker save $(REPOSITORY):$(VERSION)
 
 # ------------------------------------------------------------------------------
 # Docker Common Operations
 # ------------------------------------------------------------------------------
-
-cleanup-containers: ##Stop all running containers
-	docker ps -aq --no-trunc | xargs docker stop
-	docker ps -aq --no-trunc | xargs docker rm
-
-stop-all-containers: ##Stop all running containers
-	docker ps -aq --no-trunc | xargs docker stop
-
-remove-stopped-containers: ##Removes all stopped containers
-	docker ps -aq --no-trunc | xargs docker rm
 
 cleanup-images: ##Clean up all images
 	docker images -q --filter dangling=true | xargs docker rmi
@@ -68,14 +62,3 @@ remove-all-images: stop-all-containers ## Remove all docker images locally.
 
 prune-images: remove-stopped-containers ## Prune's docker images
 	docker image prune --force
-
-# ------------------------------------------------------------------------------
-# Local Development
-# ------------------------------------------------------------------------------
-
-run: build ## Run the container via docker compose for local development
-	 docker-compose -p dev down && docker-compose -p dev kill && docker-compose -p dev build && docker-compose -p dev up
-
-stop: ## Run the container via docker compose for local development
-	 docker-compose -p dev downredis-
-
