@@ -40,6 +40,9 @@ build: ## Build all the redis version docker images.
 	cd ${PWD}/containers/redis/5.0.5 && $(MAKE) build
 	cd ${PWD}/containers/mass-insertion && $(MAKE) build
 
+run: build ## Run the container via docker-compose for local development
+	 docker-compose -p dev down && docker-compose -p dev kill && docker-compose -p dev build && docker-compose -p dev up	
+
 
 # ------------------------------------------------------------------------------
 # Docker Common Operations
@@ -69,13 +72,6 @@ remove-all-images: stop-all-containers ## Remove all docker images locally.
 prune-images: remove-stopped-containers ## Prune's docker images
 	docker image prune --force
 
-# ------------------------------------------------------------------------------
-# Local Development
-# ------------------------------------------------------------------------------
 
-run: build ## Run the container via docker compose for local development
-	 docker-compose -p dev down && docker-compose -p dev kill && docker-compose -p dev build && docker-compose -p dev up
 
-stop: ## Run the container via docker compose for local development
-	 docker-compose -p dev downredis-
 
