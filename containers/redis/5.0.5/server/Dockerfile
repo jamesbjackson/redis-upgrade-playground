@@ -1,8 +1,8 @@
 FROM debian:stretch-slim
 
-ENV REDIS_VERSION 3.2.13
-ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-3.2.13.tar.gz
-ENV REDIS_DOWNLOAD_SHA 862979c9853fdb1d275d9eb9077f34621596fec1843e3e7f2e2f09ce09a387ba
+ENV REDIS_VERSION 5.0.5
+ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-5.0.5.tar.gz
+ENV REDIS_DOWNLOAD_SHA 2139009799d21d8ff94fc40b7f36ac46699b9e1254086299f8d3b223ca54a375
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r redis && useradd -r -g redis redis
@@ -79,6 +79,7 @@ VOLUME /data
 WORKDIR /data
 
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379

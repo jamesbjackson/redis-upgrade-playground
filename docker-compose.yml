@@ -1,0 +1,65 @@
+version: '3.2'
+services:
+
+  redis_node_1:
+    image: dev/redis-server:2.8.17
+    ports:
+      - "6380:6379"  
+  
+  redis_node_2:
+    image: dev/redis-server:2.8.17
+    command: redis-server --slaveof redis_master 6379
+    links:
+      - redis_node_1:redis_master
+    ports:
+      - "6381:6379"   
+  
+  redis_node_3:
+    image: dev/redis-server:5.0.5
+    command: redis-server --slaveof redis_master 6379
+    links:
+      - redis_node_1:redis_master
+    ports:
+      - "6382:6379"   
+  
+  redis_node_4:
+    image: dev/redis-server:5.0.5
+    command: redis-server --slaveof redis_master 6379
+    links:
+      - redis_node_1:redis_master
+    ports:
+      - "6383:6379"
+
+  redis_sentinel_1:
+    image: dev/redis-sentinel:2.8.17
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+    links:
+      - redis_node_1:redis-master
+    ports:
+      - "26380:26379"
+
+  redis_sentinel_2:
+    image: dev/redis-sentinel:2.8.17
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+    links:
+      - redis_node_1:redis-master
+    ports:
+      - "26381:26379"
+
+  redis_sentinel_3:
+    image: dev/redis-sentinel:2.8.17
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+    links:
+      - redis_node_1:redis-master
+    ports:
+      - "26382:26379"            
+
+       
+
+

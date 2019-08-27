@@ -1,5 +1,8 @@
 
-.PHONY: help deps build shell clean export cleanup-containers stop-all-containers cleanup-images remove-untagged-images remove-all-images remove-all-images prune-images
+REPOSITORY = "electricimp/agent-http"
+VERSION = `git rev-parse --short HEAD`
+
+.PHONY: help deps build shell clean export cleanup-containers stop-all-containers cleanup-images remove-untagged-images remove-all-images remove-all-images prune-images run
 
 # ------------------------------------------------------------------------------
 # Make Targets / Help Information
@@ -30,11 +33,11 @@ help: ## This help dialog.
 
 
 build: ## Build all the redis version docker images.
-	cd ${PWD}/redis/2.8.17 && $(MAKE) build
-	cd ${PWD}/redis/3.0.7 && $(MAKE) build
-	cd ${PWD}/redis/3.2.13 && $(MAKE) build
-	cd ${PWD}/redis/4.0.14 && $(MAKE) build
-	cd ${PWD}/redis/5.0.5 && $(MAKE) build
+	cd ${PWD}/containers/redis/2.8.17 && $(MAKE) build
+	cd ${PWD}/containers/redis/3.0.7 && $(MAKE) build
+	cd ${PWD}/containers/redis/3.2.13 && $(MAKE) build
+	cd ${PWD}/containers/redis/4.0.14 && $(MAKE) build
+	cd ${PWD}/containers/redis/5.0.5 && $(MAKE) build
 
 
 # ------------------------------------------------------------------------------
@@ -64,3 +67,14 @@ remove-all-images: stop-all-containers ## Remove all docker images locally.
 
 prune-images: remove-stopped-containers ## Prune's docker images
 	docker image prune --force
+
+# ------------------------------------------------------------------------------
+# Local Development
+# ------------------------------------------------------------------------------
+
+run: build ## Run the container via docker compose for local development
+	 docker-compose -p dev down && docker-compose -p dev kill && docker-compose -p dev build && docker-compose -p dev up
+
+stop: ## Run the container via docker compose for local development
+	 docker-compose -p dev downredis-
+
